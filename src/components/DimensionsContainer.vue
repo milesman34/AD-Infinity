@@ -14,7 +14,7 @@ export default {
 
 <template>
     <div id="dimensions-container">
-        5
+        {{ store.dimensions[7].requiredDimboostsToUnlock() }}
     </div>
 </template>
 

@@ -8,30 +8,60 @@ export const useGameStore = defineStore("game", {
         // Current amount of antimatter
         antimatter: new Decimal(10),
 
+        // Number of dimboosts purchased
+        dimBoosts: 0,
+
+        // Number of galaxies purchased
+        galaxies: this.dimBoosts * 5,
+
         // Current normal dimensions
         dimensions: [
             Dimension({
-                type: 1,
+                tier: 1,
                 cost: new Decimal(10),
                 costMultiplier: new Decimal(1e2)
             }),
 
             Dimension({
-                type: 2,
+                tier: 2,
                 cost: new Decimal(100),
+                costMultiplier: new Decimal(1e3)
+            }),
+
+            Dimension({
+                tier: 3,
+                cost: new Decimal(1e4),
                 costMultiplier: new Decimal(1e4)
             }),
 
             Dimension({
-                type: 3,
-                cost: new Decimal(1e4),
+                tier: 4,
+                cost: new Decimal(1e6),
                 costMultiplier: new Decimal(1e6)
             }),
 
             Dimension({
-                type: 4,
-                cost: new Decimal(1e6),
+                tier: 5,
+                cost: new Decimal(1e9),
                 costMultiplier: new Decimal(1e9)
+            }),
+
+            Dimension({
+                tier: 6,
+                cost: new Decimal(1e12),
+                costMultiplier: new Decimal(1e12)
+            }),
+
+            Dimension({
+                tier: 7,
+                cost: new Decimal(1e15),
+                costMultiplier: new Decimal(1e16)
+            }),
+
+            Dimension({
+                tier: 8,
+                cost: new Decimal(1e18),
+                costMultiplier: new Decimal(1e21)
             })
         ]
     }),
