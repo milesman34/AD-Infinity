@@ -79,6 +79,12 @@ export const useGameStore = defineStore("game", {
         // Gets the number of 10x purchases the player has of a dimension
         getDimension10xPurchases: state => tier => Math.floor(state.getDimensionPurchases(tier) / 10),
 
+        // Gets the number of purchases the player has made on the current 10 of a dimension
+        getDimensionPurchasesOnCurrent10: state => tier => state.getDimensionPurchases(tier) % 10,
+
+        // Gets the number of purchases the player has to make to reach the next set of 10 dimensions
+        getRemainingDimensionPurchasesForCurrent10: state => tier => 10 - state.getDimensionPurchasesOnCurrent10(tier),
+
         // Gets the current cost of a dimension
         getDimensionCost: state => tier => {
             const dimension = state.getDimension(tier);
@@ -87,8 +93,8 @@ export const useGameStore = defineStore("game", {
         },
 
         // Gets the cost of buying until 10 of a dimension
-        getDimensionCostUntilTen: state => tier => {
-            let purchased = state.getDimensionPurchases(tier) % 10;
+        getDimensionCostUntil10: state => tier => {
+            let purchased = state.getDimensionPurchasesOnCurrent10(tier);
             return state.getDimensionCost(tier).times(10 - purchased);
         },
 
@@ -96,7 +102,7 @@ export const useGameStore = defineStore("game", {
         canAffordDimension: state => tier => state.antimatter.gte(state.getDimensionCost(tier)),
 
         // Can the player afford buying a dimension until 10
-        canAffordDimensionUntilTen: state => tier => state.antimatter.gte(state.getDimensionCostUntilTen(tier)),
+        canAffordDimensionUntil10: state => tier => state.antimatter.gte(state.getDimensionCostUntil10(tier)),
 
         // Gets the number of dimboosts needed to unlock a dimension
         getRequiredDimboostsToUnlock: () => tier =>
@@ -163,15 +169,15 @@ export const useGameStore = defineStore("game", {
         },
 
         // Buys a dimension until 10 if it is affordable
-        buyDimensionUntilTen(tier) {
-            const cost = this.getDimensionCostUntilTen(tier);
+        buyDimensionUntil10(tier) {
+            const cost = this.getDimensionCostUntil10(tier);
             const dimension = this.getDimension(tier);
 
             if (this.antimatter.gte(cost)) {
                 this.subtractAntimatter(cost);
 
                 // Figure out how many purchases are needed
-                const neededPurchases = 10 - (dimension.purchases % 10);
+                const neededPurchases = this.getRemainingDimensionPurchasesForCurrent10(tier);
 
                 // Add these purchases to the purchases + amounts
                 dimension.purchases += neededPurchases;

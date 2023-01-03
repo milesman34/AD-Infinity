@@ -14,6 +14,15 @@ export default {
                 "button-affordable": affordable,
                 "button-unaffordable": !affordable
             };
+        },
+
+        // Gets the text to display for the dimension amount
+        getDimensionAmountText() {
+            const amount = this.store.getDimensionAmount(this.tier);
+            const purchases = this.store.getDimensionPurchasesOnCurrent10(this.tier);
+
+            return formatValue(amount, 2, true) + (purchases === 0 ? "" :
+                ` (${purchases})`);
         }
     },
 
@@ -35,18 +44,18 @@ export default {
             </div>
         </div>
 
-        <div class="dimension-amount-container flex-center">
-            {{ formatValue(store.getDimensionAmount(tier), 2, true) }}
+        <div class="dimension-amount-container">
+            {{ getDimensionAmountText() }}
         </div>
 
         <div class="buy-buttons-container">
             <button @click="store.buyDimension(tier)" :class="getAffordClass(store.canAffordDimension(tier))"
-                class="dim-button buy-dimension-button">Cost: {{ formatValue(store.getDimensionCost(tier)) }}</button>
-            <button @click="store.buyDimensionUntilTen(tier)"
-                :class="getAffordClass(store.canAffordDimensionUntilTen(tier))"
-                class="dim-button buy-until10-button">Until 10, Cost: {{
-        formatValue(store.getDimensionCostUntilTen(tier))
-                }}</button>
+                class="dim-button buy-dimension-button">{{ formatValue(store.getDimensionCost(tier)) }} AM</button>
+            <button @click="store.buyDimensionUntil10(tier)"
+                :class="getAffordClass(store.canAffordDimensionUntil10(tier))"
+                class="dim-button buy-until10-button">Until 10, {{
+        formatValue(store.getDimensionCostUntil10(tier))
+                }} AM</button>
         </div>
     </div>
 </template>
@@ -54,7 +63,7 @@ export default {
 <style scoped>
 .dimension-container {
     display: grid;
-    grid-template-columns: 20% 50% auto 20%;
+    grid-template-columns: 20% 20% 30% auto 30%;
     margin-top: 1vh;
     margin-bottom: 1vh;
     margin-left: 1vw;
@@ -78,11 +87,15 @@ export default {
     color: rgb(0, 255, 255);
 }
 
+.dimension-amount-container {
+    grid-column: 3;
+}
+
 .buy-buttons-container {
     display: flex;
     flex-direction: row;
-    align-items: center;
-    grid-column: 4;
+    justify-content: flex-end;
+    grid-column: 5;
 }
 
 .dim-button {
@@ -99,16 +112,16 @@ export default {
 }
 
 .button-unaffordable {
-    background-color: rgb(72, 71, 77);
+    background-color: rgb(86, 85, 92);
     border: 2px solid red;
 }
 
 .buy-dimension-button {
     margin-right: 1vw;
-    width: 5vw;
+    width: 45%;
 }
 
 .buy-until10-button {
-    width: 10vw;
+    width: 30%;
 }
 </style>

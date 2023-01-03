@@ -23,7 +23,7 @@ export default {
 
 		// Create the core gameplay loop
 		setInterval(() => {
-			this.store.runGameTick(tps)
+			this.store.runGameTick(tps);
 		}, 1000 / tps);
 	}
 }
