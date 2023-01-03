@@ -1,14 +1,18 @@
 <script>
 import AntimatterDisplay from './components/AntimatterDisplay.vue';
+import DimensionsContainer from './components/DimensionsContainer.vue';
 import { useGameStore } from './store/store';
 
 export default {
 	components: {
-		AntimatterDisplay
+		AntimatterDisplay,
+		DimensionsContainer
 	},
 
 	setup() {
 		let store = useGameStore();
+
+		console.log(store.dimensions);
 
 		return {
 			store
@@ -29,6 +33,7 @@ export default {
 <template>
 	<div id="app-container">
 		<AntimatterDisplay />
+		<DimensionsContainer />
 	</div>
 </template>
 
