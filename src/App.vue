@@ -12,20 +12,19 @@ export default {
 	setup() {
 		let store = useGameStore();
 
-		console.log(store.dimensions);
-
 		return {
 			store
 		}
 	},
 	
 	created() {
-		console.log(Decimal.POSITIVE_INFINITY);
+		// Number of ticks per second
+		const tps = 20;
 
 		// Create the core gameplay loop
 		setInterval(() => {
-			// Do something
-		}, 50);
+			this.store.runGameTick(tps)
+		}, 1000 / tps);
 	}
 }
 </script>
@@ -40,7 +39,7 @@ export default {
 <style scoped>
 	#app-container {
 		display: grid;
-		grid-template-rows: 10% auto;
+		grid-template-rows: 10% 10% auto;
 		height: 100%;
 	}
 </style>

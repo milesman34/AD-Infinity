@@ -20,7 +20,7 @@ export default {
 <template>
     <div class="flex-row">
         <div id="antimatter-display">  
-            You have <span id="number-display">{{ formatValue(store.antimatter) }}</span> antimatter
+            You have <span id="number-display">{{ formatValue(store.antimatter, 2, true) }}</span> antimatter
         </div>
     </div>
 </template>
