@@ -135,7 +135,10 @@ export const useGameStore = defineStore("game", {
 
         // Gets the effective production from a dimension
         getDimensionProduction: state => tier =>
-            state.getDimensionAmount(tier) * state.getDimensionMultiplier(tier),
+            state.getDimensionAmount(tier).times(state.getDimensionMultiplier(tier)),
+
+        // Gets the antimatter production per second
+        antimatterProduction: state => state.getDimensionProduction(1),
 
         // Gets all unlocked dimensions
         unlockedDimensions: state => state.dimensions.filter(dim => state.isDimensionUnlocked(dim.tier))

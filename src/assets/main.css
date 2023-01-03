@@ -26,3 +26,10 @@ button {
     justify-content: center;
     flex-direction: row;
 }
+
+.flex-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
