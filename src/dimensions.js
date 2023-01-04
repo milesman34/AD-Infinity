@@ -1,3 +1,5 @@
+import Decimal from "break_infinity.js";
+
 // Class for a given normal dimension
 export const Dimension = ({tier, cost, costMultiplier}) => ({
     // Tier of dimension (1st, 2nd, etc)

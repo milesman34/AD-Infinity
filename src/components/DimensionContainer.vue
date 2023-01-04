@@ -1,37 +1,33 @@
 <script>
 import { useGameStore } from "../store/store.js";
-import { formatValue } from "../format.js";
+import { getAffordClass } from "../helpers";
+import { scientific } from "../format.js";
 
 export default {
     props: ["tier"],
-
-    methods: {
-        formatValue,
-
-        // Gets the class to use for the button (affordable/unaffordable) based on if it can afford it
-        getAffordClass(affordable) {
-            return {
-                "button-affordable": affordable,
-                "button-unaffordable": !affordable
-            };
-        },
-
-        // Gets the text to display for the dimension amount
-        getDimensionAmountText() {
-            const amount = this.store.getDimensionAmount(this.tier);
-            const purchases = this.store.getDimensionPurchasesOnCurrent10(this.tier);
-
-            return formatValue(amount, 2, true) + (purchases === 0 ? "" :
-                ` (${purchases})`);
-        }
-    },
 
     setup() {
         let store = useGameStore();
 
         return {
+            scientific,
             store
         };
+    },
+
+    methods: {
+        getAffordClass
+    },
+
+    computed: {
+        // Gets the text to display for the dimension amount
+        dimensionAmountText() {
+            const amount = this.store.getDimensionAmount(this.tier);
+            const purchases = this.store.getDimensionPurchasesOnCurrent10(this.tier);
+
+            return scientific.format(amount, 2) + (purchases === 0 ? "" :
+                ` (${purchases})`);
+        }
     }
 }
 </script>
@@ -40,21 +36,22 @@ export default {
     <div class="dimension-container">
         <div class="dimension-name-container">
             <div class="dimension-name-display flex-center">{{ store.getTierString(tier) }} Dimension</div>
-            <div class="dimension-multiplier-display flex-center">x{{ formatValue(store.getDimensionMultiplier(tier)) }}
+            <div class="dimension-multiplier-display flex-center">x{{ scientific.format(store.getDimensionMultiplier(tier), 2, 1) }}
             </div>
         </div>
 
         <div class="dimension-amount-container">
-            {{ getDimensionAmountText() }}
+            {{ dimensionAmountText }}
         </div>
 
         <div class="buy-buttons-container">
             <button @click="store.buyDimension(tier)" :class="getAffordClass(store.canAffordDimension(tier))"
-                class="dim-button buy-dimension-button">{{ formatValue(store.getDimensionCost(tier)) }} AM</button>
+                class="dim-button buy-dimension-button">{{ scientific.format(store.getDimensionCost(tier)) }}
+                AM</button>
             <button @click="store.buyDimensionUntil10(tier)"
                 :class="getAffordClass(store.canAffordDimensionUntil10(tier))"
                 class="dim-button buy-until10-button">Until 10, {{
-        formatValue(store.getDimensionCostUntil10(tier))
+        scientific.format(store.getDimensionCostUntil10(tier))
                 }} AM</button>
         </div>
     </div>
@@ -100,20 +97,7 @@ export default {
 
 .dim-button {
     height: 100%;
-}
-
-.button-affordable {
-    background-color: rgb(108, 107, 116);
-    border: 2px solid green;
-}
-
-.button-affordable:hover {
-    background-color: white;
-}
-
-.button-unaffordable {
-    background-color: rgb(86, 85, 92);
-    border: 2px solid red;
+    font-size: 0.8rem;
 }
 
 .buy-dimension-button {

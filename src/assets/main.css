@@ -33,3 +33,17 @@ button {
     justify-content: center;
     flex-direction: column;
 }
+
+.button-affordable {
+    background-color: rgb(108, 107, 116);
+    border: 2px solid green;
+}
+
+.button-affordable:hover {
+    background-color: rgb(180, 180, 180);
+}
+
+.button-unaffordable {
+    background-color: rgb(86, 85, 92);
+    border: 2px solid red;
+}

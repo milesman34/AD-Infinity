@@ -1,12 +1,14 @@
 <script>
 import AntimatterDisplay from './components/AntimatterDisplay.vue';
 import DimensionsContainer from './components/DimensionsContainer.vue';
+import TickspeedContainer from './components/TickspeedContainer.vue';
 import { useGameStore } from './store/store';
 
 export default {
 	components: {
 		AntimatterDisplay,
-		DimensionsContainer
+		DimensionsContainer,
+		TickspeedContainer
 	},
 
 	setup() {
@@ -23,7 +25,7 @@ export default {
 
 		// Create the core gameplay loop
 		setInterval(() => {
-			this.store.runGameTick(tps);
+			this.store.runGameTick(tps / 20);
 		}, 1000 / tps);
 	}
 }
@@ -32,14 +34,15 @@ export default {
 <template>
 	<div id="app-container">
 		<AntimatterDisplay />
+		<TickspeedContainer />
 		<DimensionsContainer />
 	</div>
 </template>
 
 <style scoped>
 	#app-container {
-		display: grid;
-		grid-template-rows: 10% 10% auto;
+		display: flex;
+		flex-direction: column;
 		height: 100%;
 	}
 </style>

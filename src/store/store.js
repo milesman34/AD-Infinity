@@ -2,6 +2,8 @@ import { defineStore } from "pinia";
 
 import { Dimension } from "../dimensions.js";
 
+import Decimal from "break_infinity.js";
+
 // Core store for the game
 export const useGameStore = defineStore("game", {
     state: () => ({
@@ -12,7 +14,7 @@ export const useGameStore = defineStore("game", {
         dimBoosts: 0,
 
         // Number of galaxies purchased
-        galaxies: 0,
+        galaxies: 2,
 
         // Current normal dimensions
         dimensions: [
@@ -63,7 +65,12 @@ export const useGameStore = defineStore("game", {
                 cost: new Decimal(1e24),
                 costMultiplier: new Decimal(1e15)
             })
-        ]
+        ],
+
+        tickspeed: {
+            cost: new Decimal(1e3),
+            purchases: 10
+        }
     }),
 
     getters: {
@@ -134,14 +141,37 @@ export const useGameStore = defineStore("game", {
         },
 
         // Gets the effective production from a dimension
-        getDimensionProduction: state => tier =>
-            state.getDimensionAmount(tier).times(state.getDimensionMultiplier(tier)),
+        getDimensionProduction: state => tier => {
+            // Base production w/o tickspeed
+            const baseProduction = state.getDimensionAmount(tier).times(state.getDimensionMultiplier(tier));
+
+            // Apply tickspeed
+            return baseProduction.times(state.currentTickspeedEffect);
+        },
 
         // Gets the antimatter production per second
         antimatterProduction: state => state.getDimensionProduction(1),
 
         // Gets all unlocked dimensions
-        unlockedDimensions: state => state.dimensions.filter(dim => state.isDimensionUnlocked(dim.tier))
+        unlockedDimensions: state => state.dimensions.filter(dim => state.isDimensionUnlocked(dim.tier)),
+
+        // Gets the number of tickspeed purchases
+        tickspeedPurchases: state => state.tickspeed.purchases,
+
+        // Gets the current tickspeed
+        currentTickspeed: state => new Decimal(1000).times(new Decimal(1 - state.tickspeedUpgradePower).pow(state.tickspeedPurchases)),
+
+        // Gets the current multiplier based on tickspeed
+        currentTickspeedEffect: state => new Decimal(1000).div(state.currentTickspeed),
+
+        // Gets the cost of the tickspeed upgrade
+        tickspeedCost: state => state.tickspeed.cost.times(new Decimal(10).pow(state.tickspeedPurchases)),
+
+        // Can the player afford a tickspeed upgrade
+        canAffordTickspeed: state => state.antimatter.gte(state.tickspeedCost),
+
+        // Gets the current boost per tickspeed upgrade
+        tickspeedUpgradePower: state => state.galaxies === 0 ? new Decimal(0.11) : state.galaxies === 1 ? new Decimal(0.12) : new Decimal(0.14)
     },
 
     actions: {
@@ -188,11 +218,28 @@ export const useGameStore = defineStore("game", {
             }
         },
 
+        // Buys a tickspeed upgrade if it is affordable
+        buyTickspeed() {
+            const cost = this.tickspeedCost;
+
+            console.log(this.tickspeed);
+
+            if (this.antimatter.gte(cost)) {
+                this.subtractAntimatter(cost);
+                this.addTickspeedAmount(1);
+            }
+        },
+
         // Add to the amount of a dimension
         addDimensionAmount(tier, amount) {
             const dimension = this.getDimension(tier);
 
             dimension.amount = dimension.amount.add(amount);
+        },
+
+        // Adds to the tickspeed amount
+        addTickspeedAmount(amount) {
+            this.tickspeed.purchases += amount;
         },
 
         // Runs a tick of production from the dimensions
