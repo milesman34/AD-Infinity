@@ -50,9 +50,15 @@ export default {
             Reduce the tick interval by {{ tickspeedPowerText }}
         </div>
         
-        <button @click="store.buyTickspeed()" :class="getAffordClass(store.canAffordTickspeed)" class="tickspeed-button">
-            Tickspeed Cost: {{ scientific.format(store.tickspeedCost) }}
-        </button>
+        <div id="tickspeed-buttons-container">
+            <button @click="store.buyTickspeed()" :class="getAffordClass(store.canAffordTickspeed)" class="tickspeed-button">
+                Tickspeed Cost: {{ scientific.format(store.tickspeedCost) }}
+            </button>
+            
+            <button @click="store.buyMaxTickspeed()" :class="getAffordClass(store.canAffordTickspeed)" class="tickspeed-max-button">
+                Buy Max
+            </button>
+        </div>
 
         <div id="tickspeed-text">
             Tickspeed: {{ tickspeedText }}
@@ -69,6 +75,17 @@ export default {
 .tickspeed-button {
     margin-top: 10px;
     width: 10vw;
+}
+
+.tickspeed-max-button {
+    margin-top: 10px;
+    width: 4vw;
+    margin-left: 1vw;
+}
+
+#tickspeed-buttons-container {
+    display: flex;
+    flex-direction: row;
 }
 
 #tickspeed-text {
