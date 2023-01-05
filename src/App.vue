@@ -42,8 +42,10 @@ export default {
 				let number = parseInt(event.code[5]);
 
 				this.store.buyDimension(number);
-			} else if (key === "t") {
+			} else if (key === "T") {
 				this.store.buyTickspeed();
+			} else if (key === "t") {
+				this.store.buyMaxTickspeed();
 			} else if (key === "d") {
 				this.store.buyDimboost();
 			} else if (key === "g") {

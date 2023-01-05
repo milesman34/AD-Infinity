@@ -284,6 +284,17 @@ export const useGameStore = defineStore("game", {
             }
         },
 
+        // Buys the max number of tickspeed upgrades
+        buyMaxTickspeed() {
+            if (!this.tickspeedUnlocked) {
+                return;
+            }
+
+            while (this.canAffordTickspeed) {
+                this.buyTickspeed();
+            }
+        },
+
         // Resets dimension amounts/purchases
         resetDimensions() {
             this.dimensions.forEach(dimension => {
