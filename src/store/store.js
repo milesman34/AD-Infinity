@@ -219,7 +219,15 @@ export const useGameStore = defineStore("game", {
             const cost = state.dimboostCost;
 
             return state.getDimensionAmount(cost.tier).gte(cost.amount);
-        }
+        },
+
+        // Gets the cost of the next galaxy
+        galaxyCost: state => {
+            return 20 + (state.galaxies + 1) * 60;
+        },
+
+        // Can the player afford a galaxy?
+        canAffordGalaxy: state => state.getDimensionAmount(8).gte(state.galaxyCost)
     },
 
     actions: {
@@ -298,6 +306,16 @@ export const useGameStore = defineStore("game", {
                 this.dimboosts++;
 
                 // Now we reset dimension amounts/purchases
+                this.resetDimensions();
+            }
+        },
+
+        // Buys a galaxy if it is affordable
+        buyGalaxy() {
+            if (this.canAffordGalaxy) {
+                this.galaxies++;
+                this.dimboosts = 0;
+
                 this.resetDimensions();
             }
         },

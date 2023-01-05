@@ -24,7 +24,7 @@ export default {
 		const tps = 20;
 
 		// Dev boost for testing
-		const devBoost = 100;
+		const devBoost = 1000;
 
 		// Create the core gameplay loop
 		setInterval(() => {

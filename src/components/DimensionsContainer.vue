@@ -2,11 +2,13 @@
 import { useGameStore } from "../store/store.js";
 import DimboostContainer from "./DimboostContainer.vue";
 import DimensionContainer from "./DimensionContainer.vue";
+import GalaxyContainer from "./GalaxyContainer.vue";
 
 export default {
     components: {
         DimboostContainer,
-        DimensionContainer
+        DimensionContainer,
+        GalaxyContainer
     },
 
     setup() {
@@ -24,6 +26,8 @@ export default {
         <DimensionContainer :tier="dimension.tier" :key="dimension.tier" v-for="dimension in store.unlockedDimensions" />
         
         <DimboostContainer />
+
+        <GalaxyContainer />
     </div>
 </template>
 
