@@ -37,12 +37,6 @@ export default {
             } else if (tickspeed.gte(100)) {
                 return scientific.format(tickspeed);
             } else {
-                console.log(tickspeed);
-                // 1 -> 10
-                // 0 -> 100
-                // -1 -> 1000
-                // -2 -> 10000
-                // 10^(2 - x)
                 return `${Math.round(tickspeed.mantissa * 100)} / ${scientific.format(new Decimal(10).pow(2 - tickspeed.exponent))}`
             }
         }
@@ -51,7 +45,7 @@ export default {
 </script>
 
 <template>
-    <div id="tickspeed-container" class="flex-column">
+    <div id="tickspeed-container" class="flex-column" v-show="store.tickspeedUnlocked">
         <div id="tickspeed-above-text">
             Reduce the tick interval by {{ tickspeedPowerText }}
         </div>

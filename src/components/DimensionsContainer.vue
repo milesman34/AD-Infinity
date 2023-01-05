@@ -27,7 +27,7 @@ export default {
 #dimensions-container {
     display: flex;
     flex-direction: column;
-    grid-row: 4;
+    grid-row: 3;
     margin-top: 5vh;
 }
 </style>

@@ -17,10 +17,10 @@ export default {
 <template>
     <div class="flex-column">
         <div id="antimatter-display">
-            You have <span id="number-display">{{ scientific.format(store.antimatter, 2) }}</span> antimatter
+            You have <span id="number-display">{{ scientific.format(store.antimatter.floor(), 2) }}</span> antimatter
         </div>
 
-        <div id="antimatter-per-second-display">
+        <div id="antimatter-per-second-display" v-show="store.hasPlayerPurchasedDimension(1)">
             You are getting <span id="aps-display">{{ scientific.format(store.antimatterProduction, 2) }}</span> antimatter per
             second
         </div>

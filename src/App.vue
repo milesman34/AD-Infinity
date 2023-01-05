@@ -23,9 +23,12 @@ export default {
 		// Number of ticks per second
 		const tps = 20;
 
+		// Dev boost for testing
+		const devBoost = 100;
+
 		// Create the core gameplay loop
 		setInterval(() => {
-			this.store.runGameTick(tps / 20);
+			this.store.runGameTick(tps / devBoost);
 		}, 1000 / tps);
 	}
 }
@@ -41,8 +44,8 @@ export default {
 
 <style scoped>
 	#app-container {
-		display: flex;
-		flex-direction: column;
+		display: grid;
+		grid-template-rows: 10% 10% auto;
 		height: 100%;
 	}
 </style>

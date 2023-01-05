@@ -14,7 +14,7 @@ export const useGameStore = defineStore("game", {
         dimBoosts: 0,
 
         // Number of galaxies purchased
-        galaxies: 2,
+        galaxies: 0,
 
         // Current normal dimensions
         dimensions: [
@@ -69,7 +69,7 @@ export const useGameStore = defineStore("game", {
 
         tickspeed: {
             cost: new Decimal(1e3),
-            purchases: 10
+            purchases: 0
         }
     }),
 
@@ -131,9 +131,21 @@ export const useGameStore = defineStore("game", {
             return `${tier}${ending}`;
         },
 
-        // Gets if a dimension is unlocked
-        isDimensionUnlocked: state => tier =>
-            state.dimBoosts >= state.getRequiredDimboostsToUnlock(tier),
+        // Has the player purchased at least 1 of a dimension
+        hasPlayerPurchasedDimension: state => tier => state.getDimensionPurchases(tier) > 0,
+
+        // Checks if a dimension is unlocked
+        isDimensionUnlocked: state => tier => {
+            if (tier === 1) { // tier 1 always unlocked
+                return true;
+            } else {
+                // Check if the player has bought the previous dimension and has bought enough dimboosts to unlock this dimension
+                return state.hasPlayerPurchasedDimension(tier - 1) && state.dimBoosts >= state.getRequiredDimboostsToUnlock(tier);
+            }
+        },
+
+        // Checks if tickspeed is unlocked
+        tickspeedUnlocked: state => state.hasPlayerPurchasedDimension(2),
 
         // Gets the multiplier of a dimension
         getDimensionMultiplier: state => tier => {
