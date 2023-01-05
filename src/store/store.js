@@ -246,7 +246,7 @@ export const useGameStore = defineStore("game", {
             const cost = this.getDimensionCost(tier);
             const dimension = this.getDimension(tier);
 
-            if (this.antimatter.gte(cost)) {
+            if (this.isDimensionUnlocked(tier) && this.antimatter.gte(cost)) {
                 this.subtractAntimatter(cost);
 
                 // Add 1 purchase
@@ -262,7 +262,7 @@ export const useGameStore = defineStore("game", {
             const cost = this.getDimensionCostUntil10(tier);
             const dimension = this.getDimension(tier);
 
-            if (this.antimatter.gte(cost)) {
+            if (this.isDimensionUnlocked(tier) && this.antimatter.gte(cost)) {
                 this.subtractAntimatter(cost);
 
                 // Figure out how many purchases are needed
@@ -278,9 +278,7 @@ export const useGameStore = defineStore("game", {
         buyTickspeed() {
             const cost = this.tickspeedCost;
 
-            console.log(this.tickspeed);
-
-            if (this.antimatter.gte(cost)) {
+            if (this.tickspeedUnlocked && this.antimatter.gte(cost)) {
                 this.subtractAntimatter(cost);
                 this.addTickspeedAmount(1);
             }

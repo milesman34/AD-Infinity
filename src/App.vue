@@ -30,6 +30,26 @@ export default {
 		setInterval(() => {
 			this.store.runGameTick(tps / devBoost);
 		}, 1000 / tps);
+
+		document.addEventListener("keydown", event => {
+			let key = event.key;
+			console.log(event);
+			
+			// Check for numerical dimensions (including shift case)
+			if (["1", "2", "3", "4", "5", "6", "7", "8"].includes(key)) {
+				this.store.buyDimensionUntil10(parseInt(key));
+			} else if ([1, 2, 3, 4, 5, 6, 7, 8].map(num => `Digit${num}`).includes(event.code)) { // Now for the buy-only 1 case, since it involves holding the shift key, affecting the key
+				let number = parseInt(event.code[5]);
+
+				this.store.buyDimension(number);
+			} else if (key === "t") {
+				this.store.buyTickspeed();
+			} else if (key === "d") {
+				this.store.buyDimboost();
+			} else if (key === "g") {
+				this.store.buyGalaxy();
+			}
+		});
 	}
 }
 </script>
