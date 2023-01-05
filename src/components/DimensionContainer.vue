@@ -63,8 +63,6 @@ export default {
     grid-template-columns: 20% 20% 30% auto 30%;
     margin-top: 1vh;
     margin-bottom: 1vh;
-    margin-left: 1vw;
-    margin-right: 1vw;
     height: 3vh;
 }
 
@@ -89,9 +87,8 @@ export default {
 }
 
 .buy-buttons-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
+    display: grid;
+    grid-template-columns: 60% 40%;
     grid-column: 5;
 }
 
@@ -102,10 +99,5 @@ export default {
 
 .buy-dimension-button {
     margin-right: 1vw;
-    width: 45%;
-}
-
-.buy-until10-button {
-    width: 30%;
 }
 </style>

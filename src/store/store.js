@@ -11,7 +11,7 @@ export const useGameStore = defineStore("game", {
         antimatter: new Decimal(10),
 
         // Number of dimboosts purchased
-        dimBoosts: 0,
+        dimboosts: 0,
 
         // Number of galaxies purchased
         galaxies: 0,
@@ -115,6 +115,15 @@ export const useGameStore = defineStore("game", {
         getRequiredDimboostsToUnlock: () => tier =>
             tier <= 4 ? 0 : tier - 4,
 
+        // Gets the multiplier from dimboosts on a dimension
+        getDimboostMultiplier: state => tier => {
+            // Number of times the 2x multiplier should happen
+            //  3 dimboosts + 1st dimension = 3 (8x multi)
+            const multiTimes = Math.max((state.dimboosts - tier) + 1, 0);
+
+            return new Decimal(2).pow(multiTimes);
+        },
+
         // Gets the string for a tier
         getTierString: () => tier => {
             let ending = "";
@@ -140,7 +149,7 @@ export const useGameStore = defineStore("game", {
                 return true;
             } else {
                 // Check if the player has bought the previous dimension and has bought enough dimboosts to unlock this dimension
-                return state.hasPlayerPurchasedDimension(tier - 1) && state.dimBoosts >= state.getRequiredDimboostsToUnlock(tier);
+                return state.hasPlayerPurchasedDimension(tier - 1) && state.dimboosts >= state.getRequiredDimboostsToUnlock(tier);
             }
         },
 
@@ -149,7 +158,10 @@ export const useGameStore = defineStore("game", {
 
         // Gets the multiplier of a dimension
         getDimensionMultiplier: state => tier => {
-            return new Decimal(2).pow(state.getDimension10xPurchases(tier));
+            // Base production w/o tickspeed
+            const baseProduction = new Decimal(2).pow(state.getDimension10xPurchases(tier));
+
+            return baseProduction.times(state.getDimboostMultiplier(tier));
         },
 
         // Gets the effective production from a dimension
@@ -183,7 +195,31 @@ export const useGameStore = defineStore("game", {
         canAffordTickspeed: state => state.antimatter.gte(state.tickspeedCost),
 
         // Gets the current boost per tickspeed upgrade
-        tickspeedUpgradePower: state => state.galaxies === 0 ? new Decimal(0.11) : state.galaxies === 1 ? new Decimal(0.12) : new Decimal(0.14)
+        tickspeedUpgradePower: state => state.galaxies === 0 ? new Decimal(0.11) : state.galaxies === 1 ? new Decimal(0.12) : new Decimal(0.14),
+
+        // Gets the number and tier of dimensions needed for the next dimboost
+        dimboostCost: state => {
+            // Dimension shifts
+            if (state.dimboosts < 4) {
+                return {
+                    amount: new Decimal(20),
+                    tier: state.dimboosts + 4
+                }
+            } else {
+                // Dimension boosts
+                return {
+                    amount: new Decimal(20).add((state.dimboosts - 4) * 15),
+                    tier: 8
+                }
+            }
+        },
+
+        // Can the player afford to dimboost?
+        canAffordDimboost: state => {
+            const cost = state.dimboostCost;
+
+            return state.getDimensionAmount(cost.tier).gte(cost.amount);
+        }
     },
 
     actions: {

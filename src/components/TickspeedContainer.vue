@@ -63,6 +63,7 @@ export default {
 <style scoped>
 #tickspeed-container {
     margin-top: 2vh;
+    font-size: 0.75rem;
 }
 
 .tickspeed-button {
