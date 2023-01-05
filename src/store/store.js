@@ -278,6 +278,30 @@ export const useGameStore = defineStore("game", {
             }
         },
 
+        // Resets dimension amounts/purchases
+        resetDimensions() {
+            this.dimensions.forEach(dimension => {
+                dimension.amount = new Decimal(0);
+                dimension.purchases = 0;
+            });
+
+            // Reset antimatter
+            this.antimatter = new Decimal(10);
+
+            // Reset tickspeed purchases
+            this.tickspeed.purchases = 0;
+        },
+
+        // Buys a dimboost if it is affordable
+        buyDimboost() {
+            if (this.canAffordDimboost) {
+                this.dimboosts++;
+
+                // Now we reset dimension amounts/purchases
+                this.resetDimensions();
+            }
+        },
+
         // Add to the amount of a dimension
         addDimensionAmount(tier, amount) {
             const dimension = this.getDimension(tier);

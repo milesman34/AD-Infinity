@@ -32,7 +32,7 @@ export default {
             Dimension Boost ({{ store.dimboosts }}): requires {{ dimboostCostText }} Dimensions
         </div>
 
-        <button id="dimboost-button" :class="getAffordClass(store.canAffordDimboost)" >
+        <button id="dimboost-button" :class="getAffordClass(store.canAffordDimboost)" @click="store.buyDimboost" >
             Reset the game for a boost
         </button>
     </div>
