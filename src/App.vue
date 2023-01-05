@@ -1,5 +1,6 @@
 <script>
 import AntimatterDisplay from './components/AntimatterDisplay.vue';
+import BuyMaxButton from './components/BuyMaxButton.vue';
 import DimensionsContainer from './components/DimensionsContainer.vue';
 import TickspeedContainer from './components/TickspeedContainer.vue';
 import { useGameStore } from './store/store';
@@ -7,6 +8,7 @@ import { useGameStore } from './store/store';
 export default {
 	components: {
 		AntimatterDisplay,
+		BuyMaxButton,
 		DimensionsContainer,
 		TickspeedContainer
 	},
@@ -33,7 +35,6 @@ export default {
 
 		document.addEventListener("keydown", event => {
 			let key = event.key;
-			console.log(event);
 			
 			// Check for numerical dimensions (including shift case)
 			if (["1", "2", "3", "4", "5", "6", "7", "8"].includes(key)) {
@@ -50,6 +51,8 @@ export default {
 				this.store.buyDimboost();
 			} else if (key === "g") {
 				this.store.buyGalaxy();
+			} else if (key === "m") {
+				this.store.buyMax();
 			}
 		});
 	}
@@ -60,6 +63,7 @@ export default {
 	<div id="app-container">
 		<AntimatterDisplay />
 		<TickspeedContainer />
+		<BuyMaxButton />
 		<DimensionsContainer />
 	</div>
 </template>
@@ -67,7 +71,7 @@ export default {
 <style scoped>
 	#app-container {
 		display: grid;
-		grid-template-rows: 10% 7.5% auto;
+		grid-template-rows: 10% 7.5% 7.5% auto;
 		height: 100%;
 	}
 </style>

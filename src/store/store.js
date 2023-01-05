@@ -295,6 +295,24 @@ export const useGameStore = defineStore("game", {
             }
         },
 
+        // Buys the maximum number of dimensions/tickspeed upgrades
+        buyMax() {
+            // time for the lazy option of buying all dimensions in order (8th first though), then tickspeed
+            let order = [8, 1, 2, 3, 4, 5, 6, 7];
+
+            order.forEach(tier => {
+                if (!this.isDimensionUnlocked(tier)) {
+                    return;
+                }
+                
+                while (this.canAffordDimensionUntil10(tier)) {
+                    this.buyDimensionUntil10(tier);
+                }
+            });
+
+            this.buyMaxTickspeed();
+        },
+
         // Resets dimension amounts/purchases
         resetDimensions() {
             this.dimensions.forEach(dimension => {
