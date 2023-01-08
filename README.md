@@ -1,4 +1,1 @@
-todo list:
-
-Add Dimensional Sacrifice
-Make game not crash when going over 1.8e308 antimatter
+Port of pre-infinity AD, written in Vue. Made for fun. Check out the real game at [ivark.github.io](https://ivark.github.io/AntimatterDimensions/)
