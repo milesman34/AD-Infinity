@@ -31,9 +31,11 @@ export default {
 		const devBoost = 1;
 
 		// Create the core gameplay loop
-		setInterval(() => {
+		const gameInterval = setInterval(() => {
 			this.store.runGameTick(tps / devBoost);
 		}, 1000 / tps);
+
+		this.store.setInterval(gameInterval);
 
 		document.addEventListener("keydown", event => {
 			let key = event.key;
@@ -64,7 +66,7 @@ export default {
 </script>
 
 <template>
-	<div id="app-container">
+	<div id="app-container" v-if="!store.isGameOver">
 		<AntimatterDisplay />
 		<TickspeedContainer />
 
@@ -74,6 +76,10 @@ export default {
 		</div>
 
 		<DimensionsContainer />
+	</div>
+
+	<div id="gameover" v-if="store.isGameOver">
+		The world has collapsed on itself due to excess of antimatter.
 	</div>
 </template>
 
@@ -92,5 +98,18 @@ export default {
 
 		justify-content: center;
 		align-items: center;
+	}
+
+	#gameover {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding-left: 2.5%;
+		padding-right: 2.5%;
+		font-size: 5rem;
+
+		height: 100%;
 	}
 </style>

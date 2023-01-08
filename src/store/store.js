@@ -11,10 +11,10 @@ export const useGameStore = defineStore("game", {
         antimatter: new Decimal(10),
 
         // Number of dimboosts purchased
-        dimboosts: 22,
+        dimboosts: 0,
 
         // Number of galaxies purchased
-        galaxies: 2,
+        galaxies: 0,
 
         // Current normal dimensions
         dimensions: [
@@ -73,7 +73,13 @@ export const useGameStore = defineStore("game", {
         },
 
         // Number of first dimensions sacrificed
-        sacrificedFirsts: new Decimal("0")
+        sacrificedFirsts: new Decimal("0"),
+
+        // Is the game over?
+        isGameOver: false,
+
+        // Game interval to use
+        interval: null
     }),
 
     getters: {
@@ -259,6 +265,11 @@ export const useGameStore = defineStore("game", {
     },
 
     actions: {
+        // Sets the game interval
+        setInterval(interval) {
+            this.interval = interval;
+        },
+
         // Adds more antimatter to the current amount
         addAntimatter(amount) {
             this.antimatter = this.antimatter.add(amount);
@@ -314,7 +325,7 @@ export const useGameStore = defineStore("game", {
 
         // Buys the max number of tickspeed upgrades
         buyMaxTickspeed() {
-            if (!this.tickspeedUnlocked) {
+            if (!this.tickspeedUnlocked || this.reachedInfinity) {
                 return;
             }
 
@@ -325,6 +336,10 @@ export const useGameStore = defineStore("game", {
 
         // Buys the maximum number of dimensions/tickspeed upgrades
         buyMax() {
+            if (this.reachedInfinity) {
+                return;
+            }
+
             // time for the lazy option of buying all dimensions in order (8th first though), then tickspeed
             let order = [8, 1, 2, 3, 4, 5, 6, 7];
 
@@ -418,13 +433,9 @@ export const useGameStore = defineStore("game", {
                 }
             });
 
-            // If antimatter is infinite, then stop the game
             if (this.reachedInfinity) {
-                alert("You win!");
-                this.resetDimensions();
-                this.dimboosts = 0;
-                this.galaxies = 0
-                this.sacrificedFirsts = new Decimal(0);
+                this.isGameOver = true;
+                clearInterval(this.interval);
             }
         }
     }
