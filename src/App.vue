@@ -2,6 +2,7 @@
 import AntimatterDisplay from './components/AntimatterDisplay.vue';
 import BuyMaxButton from './components/BuyMaxButton.vue';
 import DimensionsContainer from './components/DimensionsContainer.vue';
+import SacrificeButton from './components/SacrificeButton.vue';
 import TickspeedContainer from './components/TickspeedContainer.vue';
 import { useGameStore } from './store/store';
 
@@ -10,6 +11,7 @@ export default {
 		AntimatterDisplay,
 		BuyMaxButton,
 		DimensionsContainer,
+		SacrificeButton,
 		TickspeedContainer
 	},
 
@@ -26,7 +28,7 @@ export default {
 		const tps = 20;
 
 		// Dev boost for testing
-		const devBoost = 1000;
+		const devBoost = 1;
 
 		// Create the core gameplay loop
 		setInterval(() => {
@@ -53,6 +55,8 @@ export default {
 				this.store.buyGalaxy();
 			} else if (key === "m") {
 				this.store.buyMax();
+			} else if (key === "s") {
+				this.store.dimensionalSacrifice();
 			}
 		});
 	}
@@ -63,7 +67,12 @@ export default {
 	<div id="app-container">
 		<AntimatterDisplay />
 		<TickspeedContainer />
-		<BuyMaxButton />
+
+		<div id="buymax-container">
+			<SacrificeButton />
+			<BuyMaxButton />
+		</div>
+
 		<DimensionsContainer />
 	</div>
 </template>
@@ -73,5 +82,15 @@ export default {
 		display: grid;
 		grid-template-rows: 10% 7.5% 7.5% auto;
 		height: 100%;
+	}
+
+	#buymax-container {
+		grid-row: 3;
+
+		display: flex;
+		flex-direction: row;
+
+		justify-content: center;
+		align-items: center;
 	}
 </style>

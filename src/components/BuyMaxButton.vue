@@ -24,8 +24,6 @@ export default {
 #buy-max-button {
     width: 10vw;
     height: 3vh;
-    margin-top: 2.5vh;
-    margin-bottom: 2vh;
-    grid-row: 3;
+    margin-left: 1vw;
 }
 </style>

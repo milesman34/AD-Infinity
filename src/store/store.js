@@ -11,10 +11,10 @@ export const useGameStore = defineStore("game", {
         antimatter: new Decimal(10),
 
         // Number of dimboosts purchased
-        dimboosts: 0,
+        dimboosts: 22,
 
         // Number of galaxies purchased
-        galaxies: 0,
+        galaxies: 2,
 
         // Current normal dimensions
         dimensions: [
@@ -70,7 +70,10 @@ export const useGameStore = defineStore("game", {
         tickspeed: {
             cost: new Decimal(1e3),
             purchases: 0
-        }
+        },
+
+        // Number of first dimensions sacrificed
+        sacrificedFirsts: new Decimal("0")
     }),
 
     getters: {
@@ -159,7 +162,7 @@ export const useGameStore = defineStore("game", {
         // Gets the multiplier of a dimension
         getDimensionMultiplier: state => tier => {
             // Base production w/o tickspeed
-            const baseProduction = new Decimal(2).pow(state.getDimension10xPurchases(tier));
+            let baseProduction = new Decimal(2).pow(state.getDimension10xPurchases(tier)).times(state.getSacrificeMultiplier(tier));
 
             return baseProduction.times(state.getDimboostMultiplier(tier));
         },
@@ -167,7 +170,7 @@ export const useGameStore = defineStore("game", {
         // Gets the effective production from a dimension
         getDimensionProduction: state => tier => {
             // Base production w/o tickspeed
-            const baseProduction = state.getDimensionAmount(tier).times(state.getDimensionMultiplier(tier));
+            let baseProduction = state.getDimensionAmount(tier).times(state.getDimensionMultiplier(tier));
 
             // Apply tickspeed
             return baseProduction.times(state.currentTickspeedEffect);
@@ -227,7 +230,32 @@ export const useGameStore = defineStore("game", {
         },
 
         // Can the player afford a galaxy?
-        canAffordGalaxy: state => state.getDimensionAmount(8).gte(state.galaxyCost)
+        canAffordGalaxy: state => state.getDimensionAmount(8).gte(state.galaxyCost),
+
+        // Checks if sacrifice is unlocked
+        sacrificeUnlocked: state => state.dimboosts >= 5,
+
+        // Returns the formula for the dimensional sacrifice boost
+        sacrificePowerFormula: () => firsts => Decimal.max(new Decimal(Decimal.log10(firsts)).div(10), new Decimal(1)).pow(2),
+
+        // Current sacrifice boost
+        currentSacrificePower: state => state.sacrificePowerFormula(state.sacrificedFirsts),
+
+        // Gets the current boost from the next sacrifice
+        currentBoostOnSacrifice: state => {
+            const nextPower = state.sacrificePowerFormula(state.getDimensionAmount(1));
+
+            return Decimal.max(nextPower.div(state.currentSacrificePower), new Decimal(1));
+        },
+
+        // Checks if the player can dimensional sacrifice
+        canPlayerSacrifice: state => state.sacrificeUnlocked && state.getDimensionAmount(8).gt(0) && state.currentBoostOnSacrifice.gte(1.01),
+
+        // Gets the multiplier to a dimension from sacrifice
+        getSacrificeMultiplier: state => tier => tier === 8 ? state.currentSacrificePower : 1,
+
+        // Did the player reach infinity
+        reachedInfinity: state => state.antimatter.gte(Decimal.NUMBER_MAX_VALUE)
     },
 
     actions: {
@@ -304,7 +332,7 @@ export const useGameStore = defineStore("game", {
                 if (!this.isDimensionUnlocked(tier)) {
                     return;
                 }
-                
+
                 while (this.canAffordDimensionUntil10(tier)) {
                     this.buyDimensionUntil10(tier);
                 }
@@ -334,6 +362,7 @@ export const useGameStore = defineStore("game", {
 
                 // Now we reset dimension amounts/purchases
                 this.resetDimensions();
+                this.sacrificedFirsts = new Decimal(0);
             }
         },
 
@@ -344,6 +373,22 @@ export const useGameStore = defineStore("game", {
                 this.dimboosts = 0;
 
                 this.resetDimensions();
+                this.sacrificedFirsts = new Decimal(0);
+            }
+        },
+
+        // Does a dimensional sacrifice
+        dimensionalSacrifice() {
+            if (this.canPlayerSacrifice) {
+                // Reset all dimension amounts (not purchased) except 8th
+                // Add to sacrified firsts
+                this.sacrificedFirsts = this.sacrificedFirsts.add(this.getDimensionAmount(1));
+
+                this.dimensions.forEach(dimension => {
+                    if (dimension.tier < 8) {
+                        dimension.amount = new Decimal(0);
+                    }
+                });
             }
         },
 
@@ -372,6 +417,15 @@ export const useGameStore = defineStore("game", {
                     this.addDimensionAmount(dimension.tier - 1, production / tps);
                 }
             });
+
+            // If antimatter is infinite, then stop the game
+            if (this.reachedInfinity) {
+                alert("You win!");
+                this.resetDimensions();
+                this.dimboosts = 0;
+                this.galaxies = 0
+                this.sacrificedFirsts = new Decimal(0);
+            }
         }
     }
 });
