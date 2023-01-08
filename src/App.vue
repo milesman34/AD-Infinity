@@ -3,6 +3,7 @@ import AntimatterDisplay from './components/AntimatterDisplay.vue';
 import BuyMaxButton from './components/BuyMaxButton.vue';
 import DimensionsContainer from './components/DimensionsContainer.vue';
 import SacrificeButton from './components/SacrificeButton.vue';
+import SaveBar from "./components/SaveBar.vue"
 import TickspeedContainer from './components/TickspeedContainer.vue';
 import { useGameStore } from './store/store';
 
@@ -12,6 +13,7 @@ export default {
 		BuyMaxButton,
 		DimensionsContainer,
 		SacrificeButton,
+		SaveBar,
 		TickspeedContainer
 	},
 
@@ -30,12 +32,19 @@ export default {
 		// Dev boost for testing
 		const devBoost = 1;
 
+		this.store.loadUserData();
+
 		// Create the core gameplay loop
 		const gameInterval = setInterval(() => {
-			this.store.runGameTick(tps / devBoost);
+			this.store.runGameTick(tps, devBoost);
 		}, 1000 / tps);
 
 		this.store.setInterval(gameInterval);
+
+		// Sets up the auto-save loop
+		setInterval(() => {
+			this.store.saveUserData();
+		}, 10000);
 
 		document.addEventListener("keydown", event => {
 			let key = event.key;
@@ -76,6 +85,8 @@ export default {
 		</div>
 
 		<DimensionsContainer />
+
+		<SaveBar />
 	</div>
 
 	<div id="gameover" v-if="store.isGameOver">
@@ -86,7 +97,7 @@ export default {
 <style scoped>
 	#app-container {
 		display: grid;
-		grid-template-rows: 10% 7.5% 7.5% auto;
+		grid-template-rows: 10% 7.5% 7.5% 70% 5%;
 		height: 100%;
 	}
 

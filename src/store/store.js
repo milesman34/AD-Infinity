@@ -79,7 +79,10 @@ export const useGameStore = defineStore("game", {
         isGameOver: false,
 
         // Game interval to use
-        interval: null
+        interval: null,
+
+        // Number of ticks since the last save
+        ticksSinceSave: 0
     }),
 
     getters: {
@@ -420,22 +423,68 @@ export const useGameStore = defineStore("game", {
         },
 
         // Runs a tick of production from the dimensions
-        runGameTick(tps) {
+        runGameTick(tps, boost) {
             // For each dimension, add to either the antimatter amount or the amount of the previous dimension
             this.dimensions.forEach(dimension => {
                 const production = this.getDimensionProduction(dimension.tier);
 
                 // 1st dimension makes antimatter
                 if (dimension.tier === 1) {
-                    this.addAntimatter(production / tps);
+                    this.addAntimatter(production / (tps * boost));
                 } else {
-                    this.addDimensionAmount(dimension.tier - 1, production / tps);
+                    this.addDimensionAmount(dimension.tier - 1, production / (tps * boost));
                 }
             });
+
+            // Updates time of last tick
+            this.ticksSinceSave++;
 
             if (this.reachedInfinity) {
                 this.isGameOver = true;
                 clearInterval(this.interval);
+
+                // Reset game data
+                this.resetDimensions();
+                this.dimboosts = 0;
+                this.galaxies = 0;
+                this.sacrificedFirsts = new Decimal(0);
+                this.saveUserData();
+            }
+        },
+
+        // Saves user data to localStorage
+        saveUserData() {
+            localStorage.setItem("save", JSON.stringify({
+                antimatter: this.antimatter,
+                dimboosts: this.dimboosts,
+                galaxies: this.galaxies,
+                dimensions: this.dimensions,
+                tickspeedPurchases: this.tickspeed.purchases,
+                sacrificedFirsts: this.sacrificedFirsts
+            }));
+
+            // Update time of last save
+            this.ticksSinceSave = 0;
+        },
+
+        // Loads user data from localStorage
+        loadUserData() {
+            const save = localStorage.getItem("save");
+
+            if (save !== null) {
+                const json = JSON.parse(save);
+                
+                this.antimatter = new Decimal(json.antimatter);
+                this.dimboosts = json.dimboosts;
+                this.galaxies = json.galaxies;
+                this.sacrificedFirsts = new Decimal(json.sacrificedFirsts);
+                this.tickspeed.purchases = json.tickspeedPurchases;
+
+                json.dimensions.forEach((dimension, index) => {
+                    let dim = this.dimensions[index];
+                    dim.purchases = dimension.purchases;
+                    dim.amount = new Decimal(dimension.amount);
+                });
             }
         }
     }
